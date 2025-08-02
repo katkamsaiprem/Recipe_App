@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recipe || Home</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <header>
+        <header class="header">
+            <h1 class="header-1">
+                <a href="/">Recipe</a>
+            </h1>
+        </header>
+        <div class="search-container">
+            <input class="input" id="search-input" placeholder="Search for recipes...">
+        </div>
+
+    </header>
+    <div class="main-container d-flex gap-lg">
+        <aside class="cusine filter d-flex d-flex-direction-column"></aside>
+        <main class="main d-flex wrap-items"></main>
+    </div>
+
+    <script type="module" src="index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</body>
+
+</html>
