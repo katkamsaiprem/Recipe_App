@@ -13,7 +13,8 @@ const createElement = (element) => document.createElement(element)
 let searchValue = "";
 let recipesArray = [];
 const delay = 300;
-let arrayOfCuisines = [];
+let arrayOfSelectedCuisines = [];
+let cuisineArray = [];
 
 const getRecipes = async (URL) => {
     try {
@@ -40,30 +41,38 @@ if (recipesObj && recipesObj.recipes) {
 }
 
 if (cuisineObj && cuisineObj.cuisines) {
-    const cuisineArray = cuisineObj.cuisines;
+    cuisineArray = cuisineObj.cuisines;
     console.log("Cuisines loaded:", cuisineArray.length);
     getCuisine(cuisineArray, cuisineParentElement, createElement);
 } else {
     console.error(" Failed to load cuisines");
 }
 
+
 function getFilteredData() {
     if (!recipesArray || recipesArray.length === 0) {
         return [];
     }
 
-    if (!searchValue || searchValue.trim() === "") {
-        return recipesArray;
+    let filteredArrOfRecipes = 
+        searchValue.length > 0
+            ? recipesArray.filter((recipe) =>
+                recipe.name.toLowerCase().includes(searchValue)
+            )
+            : recipesArray;
+
+    if (arrayOfSelectedCuisines.length > 0) {
+        filteredArrOfRecipes = searchValue.length < 1 ? recipesArray : filteredArrOfRecipes;
+        filteredArrOfRecipes = filteredArrOfRecipes.filter(recipe => 
+            arrayOfSelectedCuisines.includes(recipe.cuisine)
+        );
     }
 
-    return recipesArray.filter(recipe => {
-        return recipe && recipe.name &&
-            recipe.name.toLowerCase().includes(searchValue.toLowerCase());
-    });
+    return filteredArrOfRecipes;
 }
 
 const inputEventHandler = (e) => {
-    console.log("DEBOUNCED Search executed at:", new Date().toLocaleTimeString());
+   
     searchValue = e.target.value.toLowerCase().trim();
     const filteredRecipes = getFilteredData();
     cardParentElement.innerHTML = "";
@@ -87,18 +96,31 @@ function debounce(callback, delay) {
     };
 }
 
+// Cuisine click handler for checkboxes
+// This function handles the click event on cuisine checkboxes
 const cuisineClickHandler = (e) => {
     const cuisineID = e.target.dataset.id;
     if (!cuisineID) console.warn("No cuisine ID found in the clicked element.");
     const isSelected = e.target.checked;
     console.log("Cuisine clicked:", cuisineID, "Selected:", isSelected);
-
+    const selectedCuisine = cuisineArray.reduce((acc, curr) => curr.id == cuisineID ? curr.name : acc, cuisineID);
+    arrayOfSelectedCuisines = isSelected ? [...arrayOfSelectedCuisines, selectedCuisine] : arrayOfSelectedCuisines.filter(cuisine => cuisine !== selectedCuisine);
+    console.log("Array of selected cuisines:", arrayOfSelectedCuisines); 
+    
+    // Get filtered recipes, not cuisines
+    const filteredRecipes = getFilteredData();
+    cardParentElement.innerHTML = "";
+    
+    // Display filtered recipes, not cuisines
+    if (filteredRecipes.length > 0) {
+        getRecipesCard(filteredRecipes, cardParentElement, createElement);
+    } else {
+        cardParentElement.innerHTML = "<p>No recipes found matching your filters.</p>";
+    }
 }
 
 const debounceInput = debounce(inputEventHandler, delay);
 
 inputElement.addEventListener("keyup", debounceInput);
-cuisineParentElement.addEventListener("click", cuisineClickHandler)
-
-
+cuisineParentElement.addEventListener("click", cuisineClickHandler);
 
