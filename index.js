@@ -2,7 +2,7 @@ import { getRecipesCard } from "./getRecipesCard.js"
 import { getCuisine } from "./getCuisine.js"
 
 const recipeURL = "https://dummyjson.com/recipes"
-const cuisineURL = "https://3de2awhcnqrpiue2.public.blob.vercel-storage.com/cusineJSON.json"
+const cuisineURL = "https://3de2awhcnqrpiue2.public.blob.vercel-storage.com/cuisinesJSON.json"
 
 const cardParentElement = document.querySelector(".main");
 const cuisineParentElement = document.querySelector(".cuisine")
@@ -12,7 +12,7 @@ const createElement = (element) => document.createElement(element)
 
 let searchValue = "";
 let recipesArray = [];
-const delay = 300;
+const delay = 2000;
 let arrayOfSelectedCuisines = [];
 let cuisineArray = [];
 
@@ -54,7 +54,7 @@ function getFilteredData() {
         return [];
     }
 
-    let filteredArrOfRecipes = 
+    let filteredArrOfRecipes =
         searchValue.length > 0
             ? recipesArray.filter((recipe) =>
                 recipe.name.toLowerCase().includes(searchValue)
@@ -63,7 +63,7 @@ function getFilteredData() {
 
     if (arrayOfSelectedCuisines.length > 0) {
         filteredArrOfRecipes = searchValue.length < 1 ? recipesArray : filteredArrOfRecipes;
-        filteredArrOfRecipes = filteredArrOfRecipes.filter(recipe => 
+        filteredArrOfRecipes = filteredArrOfRecipes.filter(recipe =>
             arrayOfSelectedCuisines.includes(recipe.cuisine)
         );
     }
@@ -72,7 +72,7 @@ function getFilteredData() {
 }
 
 const inputEventHandler = (e) => {
-   
+    console.log("Input event handler called at:", new Date().toLocaleTimeString());
     searchValue = e.target.value.toLowerCase().trim();
     const filteredRecipes = getFilteredData();
     cardParentElement.innerHTML = "";
@@ -89,8 +89,10 @@ const inputEventHandler = (e) => {
 function debounce(callback, delay) {
     let timerId;
     return (...args) => {
+        console.log("Debounce function called, clearing previous timer");
         clearTimeout(timerId);
         timerId = setTimeout(() => {
+            console.log(`Executing callback after ${delay}ms delay`);
             callback(...args);
         }, delay);
     };
@@ -105,12 +107,12 @@ const cuisineClickHandler = (e) => {
     console.log("Cuisine clicked:", cuisineID, "Selected:", isSelected);
     const selectedCuisine = cuisineArray.reduce((acc, curr) => curr.id == cuisineID ? curr.name : acc, cuisineID);
     arrayOfSelectedCuisines = isSelected ? [...arrayOfSelectedCuisines, selectedCuisine] : arrayOfSelectedCuisines.filter(cuisine => cuisine !== selectedCuisine);
-    console.log("Array of selected cuisines:", arrayOfSelectedCuisines); 
-    
+    console.log("Array of selected cuisines:", arrayOfSelectedCuisines);
+
     // Get filtered recipes, not cuisines
     const filteredRecipes = getFilteredData();
     cardParentElement.innerHTML = "";
-    
+
     // Display filtered recipes, not cuisines
     if (filteredRecipes.length > 0) {
         getRecipesCard(filteredRecipes, cardParentElement, createElement);
@@ -123,4 +125,12 @@ const debounceInput = debounce(inputEventHandler, delay);
 
 inputElement.addEventListener("keyup", debounceInput);
 cuisineParentElement.addEventListener("click", cuisineClickHandler);
-
+cardParentElement.addEventListener("click", (e) => {
+    let recipeID = e.target.dataset.id;
+    if (recipeID) {
+        console.log("Recipe clicked with ID:", recipeID);
+        localStorage.clear();
+        localStorage.setItem("recipeID", recipeID);
+        location.href = "single-recipe.html";
+    }
+});
