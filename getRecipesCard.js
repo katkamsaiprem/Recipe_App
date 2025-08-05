@@ -15,7 +15,7 @@ export const getRecipesCard = (recipesArray, cardParentElement, createElement) =
         imageElement.classList.add("card-image");
         imageElement.setAttribute("src", recipe.image);
         imageElement.setAttribute("alt", recipe.name);
-        imageElement.setAttribute("data-id", recipe.ID);
+        imageElement.setAttribute("data-id", recipe.id);
         cardImageContainer.appendChild(imageElement);
 
         cardContainer.appendChild(cardImageContainer);
