@@ -3,6 +3,10 @@ export const createSingleRecipePage = (recipe) => {
     const main = document.createElement('main');
     main.className = 'single-card-main';
     
+    // Create a flex container to hold card and ingredients side by side
+    const contentContainer = document.createElement('div');
+    contentContainer.className = 'recipe-content-container';
+    
     // 2. Create the recipe card
     const card = document.createElement('div');
     card.className = 'card shadow';
@@ -20,11 +24,11 @@ export const createSingleRecipePage = (recipe) => {
     
     // 4. Create info section with centered content
     const info = document.createElement('div');
-    info.className = 'info'; // Centers content vertically and horizontally
+    info.className = 'info';
     
     // 5. Add title with large font size
     const title = document.createElement('h1');
-    title.className = 'title fs-large'; // .fs-large makes it 1.5rem
+    title.className = 'title fs-large';
     title.textContent = recipe.name;
     
     // 6. Add ratings section
@@ -46,13 +50,11 @@ export const createSingleRecipePage = (recipe) => {
     
     card.appendChild(imageContainer);
     card.appendChild(info);
-    main.appendChild(card);
     
-    // 7. Create recipe steps section
-    const stepsSection = document.createElement('section');
-    stepsSection.className = 'recipe-steps'; // 50vw width with specific padding
+    // Create ingredients sidebar
+    const ingredientsSidebar = document.createElement('div');
+    ingredientsSidebar.className = 'ingredients-sidebar';
     
-    // Add ingredients section
     if (recipe.ingredients && recipe.ingredients.length > 0) {
         const ingredientsTitle = document.createElement('h2');
         ingredientsTitle.textContent = 'Ingredients';
@@ -64,11 +66,19 @@ export const createSingleRecipePage = (recipe) => {
             ingredientsList.appendChild(li);
         });
         
-        stepsSection.appendChild(ingredientsTitle);
-        stepsSection.appendChild(ingredientsList);
+        ingredientsSidebar.appendChild(ingredientsTitle);
+        ingredientsSidebar.appendChild(ingredientsList);
     }
     
-    // Add instructions section
+    // Add card and ingredients to content container
+    contentContainer.appendChild(card);
+    contentContainer.appendChild(ingredientsSidebar);
+    main.appendChild(contentContainer);
+    
+    // 7. Create instructions section (below the card and ingredients)
+    const instructionsSection = document.createElement('section');
+    instructionsSection.className = 'recipe-instructions';
+    
     if (recipe.instructions && recipe.instructions.length > 0) {
         const instructionsTitle = document.createElement('h2');
         instructionsTitle.textContent = 'Instructions';
@@ -79,11 +89,12 @@ export const createSingleRecipePage = (recipe) => {
             li.textContent = instruction;
             instructionsList.appendChild(li);
         });
-        stepsSection.appendChild(instructionsTitle);
-        stepsSection.appendChild(instructionsList);
+        
+        instructionsSection.appendChild(instructionsTitle);
+        instructionsSection.appendChild(instructionsList);
     }
     
     // Add to page
     document.body.appendChild(main);
-    document.body.appendChild(stepsSection);
+    document.body.appendChild(instructionsSection);
 }
